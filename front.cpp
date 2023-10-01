@@ -1,17 +1,11 @@
 #include "front.h"
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/Vertex.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
-#include <iostream>
 #include <vector>
 
 void Plot::loop() {
+  update();
   while (window.isOpen()) {
     handleEvent();
-    update();
   }
 }
 
@@ -27,7 +21,7 @@ void Plot::decreaseScale() {
     return;
   }
 
-  scale = scale * 9 / 10;
+  scale = scale * 0.95;
 }
 
 void Plot::increaseScale() {
@@ -35,7 +29,7 @@ void Plot::increaseScale() {
     return;
   }
 
-  scale = scale * 10 / 9;
+  scale = scale * 1.05;
 }
 
 void Plot::handleEvent() {
@@ -48,12 +42,13 @@ void Plot::handleEvent() {
       handleKeyboard(event);
     }
   }
+  update();
 }
 
 void Plot::handleKeyboard(sf::Event event) {
-  if (event.key.code == sf::Keyboard::Down) {
+  if (event.key.code == sf::Keyboard::Hyphen) {
     decreaseScale();
-  } else if (event.key.code == sf::Keyboard::Up) {
+  } else if (event.key.code == sf::Keyboard::Equal) {
     increaseScale();
   } else if (event.key.code == sf::Keyboard::Escape) {
     window.close();
@@ -61,56 +56,55 @@ void Plot::handleKeyboard(sf::Event event) {
 }
 
 void Plot::drawAxes() {
-  for (double x = kHorizontalSize / 2.; x < kHorizontalSize;
-       x += scale * kHorizontalSize / kHorizontalSegments) {
+  for (double x = window.getSize().x * 0.5; x < window.getSize().x;
+       x += scale * window.getSize().x / 12) {
     window.draw(&std::vector<sf::Vertex>(
                     {{sf::Vector2f(x, 0), kAxesColor},
-                     {sf::Vector2f(x, kVerticalSize), kAxesColor}})[0],
+                     {sf::Vector2f(x, window.getSize().y), kAxesColor}})[0],
                 2, sf::Lines);
   };
 
-  for (double x = kHorizontalSize / 2.; x >= 0;
-       x -= scale * kHorizontalSize / kHorizontalSegments) {
+  for (double x = window.getSize().x * 0.5; x >= 0;
+       x -= scale * window.getSize().x / 12) {
     window.draw(&std::vector<sf::Vertex>(
                     {{sf::Vector2f(x, 0), kAxesColor},
-                     {sf::Vector2f(x, kVerticalSize), kAxesColor}})[0],
+                     {sf::Vector2f(x, window.getSize().y), kAxesColor}})[0],
                 2, sf::Lines);
   };
 
-  for (double y = kVerticalSize / 2.; y < kVerticalSize;
-       y += scale * kHorizontalSize / kVerticalSegments) {
+  for (double y = window.getSize().y * 0.5; y < window.getSize().y;
+       y += scale * window.getSize().y / 12) {
     window.draw(&std::vector<sf::Vertex>(
                     {{sf::Vector2f(0, y), kAxesColor},
-                     {sf::Vector2f(kHorizontalSize, y), kAxesColor}})[0],
+                     {sf::Vector2f(window.getSize().x, y), kAxesColor}})[0],
                 2, sf::Lines);
   };
 
-  for (double y = kVerticalSize / 2.; y >= 0;
-       y -= scale * kVerticalSize / kVerticalSegments) {
+  for (double y = window.getSize().y * 0.5; y >= 0;
+       y -= scale * window.getSize().y / 12) {
     window.draw(&std::vector<sf::Vertex>(
                     {{sf::Vector2f(0, y), kAxesColor},
-                     {sf::Vector2f(kHorizontalSize, y), kAxesColor}})[0],
+                     {sf::Vector2f(window.getSize().x, y), kAxesColor}})[0],
                 2, sf::Lines);
   };
 }
 
 void Plot::drawGraph() {
-  for (int x = 0; x < kHorizontalSize; ++x) {
-    for (int y = 0; y < kVerticalSize; ++y) {
+  for (int x = 0; x < window.getSize().x; ++x) {
+    for (int y = 0; y < window.getSize().y; ++y) {
       trace({x, y});
     }
   }
 }
 
 void Plot::trace(Pixel px) {
-  Point p = {(px.x - kHorizontalSize / 2.) * kHorizontalSegments /
-                 kHorizontalSize / scale,
-             (kVerticalSize / 2. - px.y) * kVerticalSegments / kVerticalSize /
-                 scale};
+  Point p = {
+      (px.x - window.getSize().x * 0.5) * 12 / (window.getSize().x * scale),
+      (window.getSize().y * 0.5 - px.y) * 12 / (window.getSize().y * scale)};
 
-  if (belongToBorder(p)) {
+  if (back::belongToBorder(p)) {
     paintPixel(px, kLinesColor);
-  } else if (belongToGraph(p)) {
+  } else if (back::belongToGraph(p)) {
     paintPixel(px, kRangeColor);
   }
 }

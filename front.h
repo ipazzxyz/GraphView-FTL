@@ -3,25 +3,20 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
-#include <SFML/Window/Window.hpp>
 
-struct Pixel {
-  int x, y;
-};
-
-const int kVerticalSize = 1024;
-const int kHorizontalSize = 1024;
-const int kVerticalSegments = 12;
-const int kHorizontalSegments = 12;
 const sf::Color kBackgroundColor = sf::Color::White;
 const sf::Color kAxesColor = sf::Color(0, 0, 0, 64);
 const sf::Color kLinesColor = sf::Color::Black;
 const sf::Color kRangeColor = sf::Color(0, 0, 0, 128);
 
+struct Pixel {
+  int x, y;
+};
+
 class Plot {
 private:
   double scale = 1;
-  sf::RenderWindow window{{kHorizontalSize, kVerticalSize}, "Plot"};
+  sf::RenderWindow window{{512, 512}, "q", sf::Style::None};
 
 public:
   void loop();

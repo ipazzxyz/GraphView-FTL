@@ -1,7 +1,7 @@
 #include "back.h"
 #include "utils.cpp"
 
-bool belongToBorder(Point p) {
+bool back::belongToBorder(Point p) {
   bool Ox = tool::isZero(p.x, 0.2), Oy = tool::isZero(p.y, 0.2),
 
        line1 = tool::isZero(p.x - 4 * p.y + 10),
@@ -27,7 +27,7 @@ bool belongToBorder(Point p) {
          rectangle || rhomb;
 }
 
-bool belongToGraph(Point p) {
+bool back::belongToGraph(Point p) {
   bool leftAxisY =
            p.x<0, belowAxisX = p.y<0, belowLine1 = p.x - 4 * p.y + 10> 0,
                belowLine2 = 10 * p.x + 14 * p.y + 49 < 0,
