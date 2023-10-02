@@ -2,5 +2,5 @@
 
 int main() {
   Plot plot;
-  plot.loop();
+  plot.Loop();
 }

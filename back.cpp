@@ -2,9 +2,7 @@
 #include "utils.cpp"
 
 bool back::belongToBorder(Point p) {
-  bool Ox = tool::isZero(p.x, 0.2), Oy = tool::isZero(p.y, 0.2),
-
-       line1 = tool::isZero(p.x - 4 * p.y + 10),
+  bool line1 = tool::isZero(p.x - 4 * p.y + 10),
        line2 = tool::isZero(10 * p.x + 14 * p.y + 49, 4),
 
        parabola1 = tool::isZero(tool::pow2(p.x) - 7 * p.x + 13 + 2 * p.y, 0.5),
@@ -23,8 +21,8 @@ bool back::belongToBorder(Point p) {
        rhomb = tool::isZero(tool::fabs(2 * p.x - 3) +
                             2 * tool::fabs(2 * p.y - 1) - 10);
 
-  return Ox || Oy || line1 || line2 || parabola1 || parabola2 || circle ||
-         rectangle || rhomb;
+  return line1 || line2 || parabola1 || parabola2 || circle || rectangle ||
+         rhomb;
 }
 
 bool back::belongToGraph(Point p) {
