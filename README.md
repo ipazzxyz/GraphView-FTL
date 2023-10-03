@@ -7,7 +7,3 @@ Linux/Mac:
 make
 ./plot
 ```
-Windows:
-```
-sucks
-```
