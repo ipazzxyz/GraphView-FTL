@@ -1,12 +1,9 @@
 #include "front.h"
 #include "back.h"
-#include <SFML/Graphics/PrimitiveType.hpp>
-#include <SFML/Graphics/Vertex.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <vector>
 
 void Plot::Loop() {
   Update();
+
   while (window_.isOpen()) {
     HandleEvent();
   }
@@ -14,8 +11,10 @@ void Plot::Loop() {
 
 void Plot::Update() {
   window_.clear(cl::kBackgroundColor);
+
   DrawGrid();
   DrawGraph();
+
   window_.display();
 }
 
@@ -25,6 +24,8 @@ void Plot::DecreaseScale() {
   }
 
   scale_ = scale_ * 0.95;
+
+  Update();
 }
 
 void Plot::IncreaseScale() {
@@ -33,6 +34,8 @@ void Plot::IncreaseScale() {
   }
 
   scale_ = scale_ * 1.05;
+
+  Update();
 }
 
 void Plot::HandleEvent() {
@@ -45,7 +48,6 @@ void Plot::HandleEvent() {
       HandleKeyboard(event);
     }
   }
-  Update();
 }
 
 void Plot::HandleKeyboard(sf::Event event) {
@@ -59,41 +61,33 @@ void Plot::HandleKeyboard(sf::Event event) {
 }
 
 void Plot::DrawGrid() {
+  std::vector<sf::Vertex> toDraw;
+
   for (double x = window_.getSize().x * 0.5; x < window_.getSize().x;
        x += scale_ * window_.getSize().x / 12) {
-    window_.draw(
-        &std::vector<sf::Vertex>(
-            {{sf::Vector2f(x, 0), cl::kAxesColor},
-             {sf::Vector2f(x, window_.getSize().y), cl::kAxesColor}})[0],
-        2, sf::Lines);
-  };
+    toDraw.emplace_back(sf::Vector2f(x, 0), cl::kAxesColor);
+    toDraw.emplace_back(sf::Vector2f(x, window_.getSize().y));
+  }
 
   for (double x = window_.getSize().x * 0.5; x >= 0;
        x -= scale_ * window_.getSize().x / 12) {
-    window_.draw(
-        &std::vector<sf::Vertex>(
-            {{sf::Vector2f(x, 0), cl::kAxesColor},
-             {sf::Vector2f(x, window_.getSize().y), cl::kAxesColor}})[0],
-        2, sf::Lines);
-  };
+    toDraw.emplace_back(sf::Vector2f(x, 0), cl::kAxesColor);
+    toDraw.emplace_back(sf::Vector2f(x, window_.getSize().y));
+  }
 
   for (double y = window_.getSize().y * 0.5; y < window_.getSize().y;
        y += scale_ * window_.getSize().y / 12) {
-    window_.draw(
-        &std::vector<sf::Vertex>(
-            {{sf::Vector2f(0, y), cl::kAxesColor},
-             {sf::Vector2f(window_.getSize().x, y), cl::kAxesColor}})[0],
-        2, sf::Lines);
-  };
+    toDraw.emplace_back(sf::Vector2f(0, y), cl::kAxesColor);
+    toDraw.emplace_back(sf::Vector2f(window_.getSize().x, y), cl::kAxesColor);
+  }
 
   for (double y = window_.getSize().y * 0.5; y >= 0;
        y -= scale_ * window_.getSize().y / 12) {
-    window_.draw(
-        &std::vector<sf::Vertex>(
-            {{sf::Vector2f(0, y), cl::kAxesColor},
-             {sf::Vector2f(window_.getSize().x, y), cl::kAxesColor}})[0],
-        2, sf::Lines);
+    toDraw.emplace_back(sf::Vector2f(0, y), cl::kAxesColor);
+    toDraw.emplace_back(sf::Vector2f(window_.getSize().x, y), cl::kAxesColor);
   };
+
+  window_.draw(&toDraw[0], toDraw.size(), sf::Lines);
 }
 
 void Plot::DrawGraph() {
@@ -114,8 +108,8 @@ void Plot::Trace(Pixel px, std::vector<sf::Vertex> &toDraw) {
       (window_.getSize().y * 0.5 - px.y) * 12 / (window_.getSize().y * scale_)};
 
   if (back::belongToBorder(p)) {
-    toDraw.push_back(sf::Vertex(sf::Vector2f(px.x, px.y), cl::kLinesColor));
+    toDraw.emplace_back(sf::Vector2f(px.x, px.y), cl::kLinesColor);
   } else if (back::belongToGraph(p)) {
-    toDraw.push_back(sf::Vertex(sf::Vector2f(px.x, px.y), cl::kRangeColor));
+    toDraw.emplace_back(sf::Vector2f(px.x, px.y), cl::kRangeColor);
   }
 }

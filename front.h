@@ -11,7 +11,7 @@ const sf::Color kAxesColor = sf::Color(0, 0, 0, 64);
 const sf::Color kLinesColor = sf::Color::Black;
 const sf::Color kRangeColor = sf::Color(0, 0, 0, 128);
 } // namespace cl
-//
+
 struct Pixel {
   int x, y;
 };
